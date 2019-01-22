@@ -1,9 +1,16 @@
-div.answers{
+#icons{
+    background-color: rgb(26, 177, 177);
+    height: 155px;
+}
+
+div#answersID{
+    width:650px;
     display: block;
     background-color: aqua;
+    height: 155px;
 }
-.answerChoice{
-    display: block;
+button.answerChoice{
+    float: block;
 }
 div#timer-place{
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;

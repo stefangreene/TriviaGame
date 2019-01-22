@@ -3,33 +3,34 @@ $(document).ready(function(){  //wait for page to load before running Javascript
   var questionSet = null;
   var index = 0;
   var score = 0;
-  var timer = 0;
+  var timer
 
 //hide game score and questions on start.
 $(".check-mark").hide();
 $(".x-mark").hide();
-$(".answerChoice").hide();
+$(".answerChoice").text('');
 
 //calling gameStart function.
 gameStart();
 
 //establishing a timer with start and stop functions.
 function startTimer(){
-    var sec = 10;
-    $(".timer").text("<h2>");
+    var sec = 60;
     $(".timer").show();
     $(".timer").text(sec);
 
     timer = setInterval(function(){
-        sec --;
-        $(".timer").text(sec);
-            if(sec === -1){
-                $(".timer").fadeOut('fast');
-                stopTimer();
+        if(sec === 0){
+            $(".timer").hide("fast",function(){
                 clearCurrentGame();
-                gameStart(); 
-            }
+                gameStart();
+                resetTimer();
+            }); 
+        }
+        sec --;
+        $(".timer").text(sec);   
     }, 1000);
+
     //console.log(secs);
 }
     function stopTimer(){
@@ -37,33 +38,42 @@ function startTimer(){
         $(".timer").hide();
     }
 
+    function resetTimer(){
+        var sec = 60;
+        $(".timer").html(sec);
+    }
+
     //function to set questions and answers to page.
     function questionsAppearOnPage(qAndA){
         //add question to question div.
-        $(".question").html("<h3>" + questionSet[qAndA].question + "</h3>");
+        $(".question").html("<h2>" + questionSet[qAndA].question + "</h2>");
         //append text from questions and answers array.
         $("#buttonA").text(questionSet[qAndA].possibleAnswers[0]).show();
         $("#buttonB").text(questionSet[qAndA].possibleAnswers[1]).show();
         $("#buttonC").text(questionSet[qAndA].possibleAnswers[2]).show();
         $("#buttonD").text(questionSet[qAndA].possibleAnswers[3]).show();
-        alert(questionSet);
+
     }
 
         //set parameters for a correct player choice. including show correct answer graphic.
     function correctAnswer(){
         index;
         score ++;
-        $(".check-mark").show().delay(200).fadeOut();
+        $(".check-mark").show().delay(2000).hide();
         setTimeout(function(){
+        showAnswer();
         }, 500);
-        console.log("Correct! Your score is: " + score);
+        alert("Correct! Your score is: " + score);
     }
 
          //set parameters for an incorrect player choice. including show incorrect answer graphic.
     function wrongAnswer(){
         index;
-        $(".x-mark").show().delay(200).fadeout();
-        console.log("Incorrect")
+        $(".x-mark").show().delay(2000).hide();
+        setTimeout(function(){
+            showAnswer();
+            }, 500);
+        alert("Incorrect")
     }
 
         //gamestart function.
@@ -78,16 +88,19 @@ function startTimer(){
                 questionSet = riverQuestions;
                 questionsAppearOnPage(index);
                 startTimer();
+                alert(level);
             }
             else if (level === 'trees'){
                 questionSet = treeQuestions;
                 questionsAppearOnPage(index);
                 startTimer();
+                alert(level);
             }
             else if (level === 'rocks'){
                 questionSet = rockQuestions;
                 questionsAppearOnPage(index);
                 startTimer();
+                alert(level);
             }
         });
     }
@@ -98,21 +111,23 @@ function startTimer(){
             answersAppear();
         });
     }
+    
 
     //answers appended to buttons.
     function answersAppear(){
-        $(".question").text('');
-        $("#buttonA").text('');
-        $("#buttonB").text('');
-        $("#buttonC").text('');
-        $("#buttonD").text('');
+        $(".question").text(questionSet[index].question);
+        $("#buttonA").text(questionSet[index].possibleAnswers[0]);
+        $("#buttonB").text(questionSet[index].possibleAnswers[1]);
+        $("#buttonC").text(questionSet[index].possibleAnswers[2]);
+        $("#buttonD").text(questionSet[index].possibleAnswers[3]);
     }
 
     function setUpNewGame() {
-        index = 0;
+        index =0;
         score = 0;
         $(".answerChoice").hide();
         gameStart();
+        resetTimer();
     }
 
     function clearCurrentGame(){
@@ -122,7 +137,7 @@ function startTimer(){
         $(".answerChoice").hide();
         index = 0;
         score = 0;
-        gameStart();
+        resetTimer();
     }
 
     //answer-choice click event.
@@ -145,12 +160,17 @@ function startTimer(){
 
         answersAppear();
         index++;
+        alert(index);
+        //resetTimer();
 
-        if(index < questionSet.length){questionsAppearOnPage(index);}
-        else{
+        if(index <= questionSet.length){questionsAppearOnPage(index);}
+        else if(index > questionSet.length){
+            clearCurrentGame();
             stopTimer();
+            resetTimer();
             alert("Game Over! You scored: " + score + "/15!");
             setUpNewGame();
+            
         }
     });    
 });
